@@ -41,6 +41,14 @@
                 $listeners = is_array($listeners) ? $listeners : [$listeners];
 
                 foreach ($listeners as $listener) {
+                    if ( ! is_string($listener)) {
+                        throw new EventException("Listener must be a class name string");
+                    }
+
+                    if ( ! is_subclass_of($listener, EventListenerInterface::class)) {
+                        throw new EventException("Listener '{$listener}' must implement EventListenerInterface");
+                    }
+
                     $this->listen($event, new $listener);
                 }
             }
