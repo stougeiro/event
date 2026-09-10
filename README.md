@@ -25,6 +25,9 @@ Lightweight event dispatcher with wildcard pattern matching and automatic dedupl
 - **Framework-agnostic**  
   Works with any PHP 8.2+ project.
 
+- **Global helpers**  
+  `event()` and `events()` for quick dispatch without instantiation.
+
 ---
 
 ## 📦 Installation
@@ -74,7 +77,9 @@ segment.separated.by.dots
 
 ## 🚀 Usage
 
-### Basic: listen and dispatch
+Two paths: **instance** or **global helper**.
+
+### Path 1: Instance
 
 ```php
 use STDW\Event\EventManager;
@@ -85,13 +90,38 @@ $em->listen('order.created', new SendEmailListener());
 $em->dispatch('order.created', ['id' => 42]);
 ```
 
+### Path 2: Global helpers
+
+```php
+events()->listen('order.created', new SendEmailListener());
+event('order.created', ['id' => 42]);
+```
+
+| Function | Returns | Use |
+|---|---|---|
+| `events()` | `EventManager` | Register listeners, load config |
+| `event($name, $data)` | `void` | Dispatch shorthand |
+
+```php
+// Register
+events()->listen('user.*', new AuditListener());
+
+// Or load from file
+events()->load(__DIR__ . '/events.php');
+
+// Dispatch
+event('user.created', ['action' => 'created']);
+```
+
+Both share the same `EventManager` instance — listeners registered via `events()` are triggered by `event()`.
+
 ### Wildcard listeners
 
 ```php
-$em->listen('user.*', new AuditListener());
+events()->listen('user.*', new AuditListener());
 
-$em->dispatch('user.created', ['action' => 'created']);
-$em->dispatch('user.deleted', ['action' => 'deleted']);
+event('user.created', ['action' => 'created']);
+event('user.deleted', ['action' => 'deleted']);
 // Both trigger the same listener
 ```
 
@@ -100,10 +130,10 @@ $em->dispatch('user.deleted', ['action' => 'deleted']);
 ```php
 $logger = new LoggingListener();
 
-$em->listen('post.created', $logger);
-$em->listen('post.*', $logger);
+events()->listen('post.created', $logger);
+events()->listen('post.*', $logger);
 
-$em->dispatch('post.created', ['title' => 'Hello']);
+event('post.created', ['title' => 'Hello']);
 // LoggingListener executes ONCE, not twice
 ```
 
@@ -118,8 +148,8 @@ return [
 ];
 
 // bootstrap
-$em = new EventManager();
-$em->load(__DIR__ . '/events.php');
+events()->load(__DIR__ . '/events.php');
+event('order.created', ['id' => 42]);
 ```
 
 ---
