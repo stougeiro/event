@@ -1,0 +1,42 @@
+{
+    "name": "stougeiro/event",
+    "description": "",
+    "type": "library",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "stougeiro",
+            "email": "sidneytougeiro@gmail.com"
+        }
+    ],
+    "keywords": [
+    ],
+    "support": {
+        "issues": "https://github.com/stougeiro/event/issues",
+        "source": "https://github.com/stougeiro/event"
+    },
+    "funding": [
+        {
+            "type": "buymeacoffee",
+            "url": "https://www.buymeacoffee.com/stougeiro"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "STDW\\Event\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.1"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.2"
+    }
+}
