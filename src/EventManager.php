@@ -5,8 +5,6 @@
     use STDW\Contract\Event\EventManagerInterface;
     use STDW\Contract\Event\EventListenerInterface;
 
-    use RuntimeException;
-
 
     class EventManager implements EventManagerInterface
     {
@@ -30,13 +28,13 @@
         public function load(string $file): void
         {
             if ( ! file_exists($file)) {
-                throw new RuntimeException("events: file {$file} not found");
+                throw new EventException("Event file '{$file}' not found");
             }
 
             $events = include $file;
 
             if ( ! is_array($events)) {
-                throw new RuntimeException("events: file {$file} must return an array");
+                throw new EventException("Event file '{$file}' must return an array");
             }
 
             foreach ($events as $event => $listeners) {
@@ -56,13 +54,13 @@
         public function listen(string $event, EventListenerInterface $listener): void
         {
             if ( ! $this->isValidEventName($event)) {
-                throw new RuntimeException("events: '{$event}' is not a valid event name");
+                throw new EventException("Invalid event name '{$event}'");
             }
 
             $id = get_class($listener);
 
             if (isset($this->listeners[$id])) {
-                throw new RuntimeException("events: '{$id}' already registered");
+                throw new EventException("Listener '{$id}' is already registered");
             }
 
             $this->events[$event][] = $listener;
@@ -77,7 +75,7 @@
         public function dispatch(string $event, array $data): void
         {
             if (str_contains($event, '*')) {
-                throw new RuntimeException("events: dispatching wildcard events is not allowed");
+                throw new EventException("Wildcard events cannot be dispatched");
             }
 
             $listeners = $this->resolveListeners($event);
