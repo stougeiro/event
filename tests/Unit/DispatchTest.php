@@ -87,3 +87,42 @@ it('does not dispatch when no listeners registered', function () {
 
     expect(true)->toBeTrue();
 });
+
+it('dispatches to global wildcard listener', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen('*', $listener);
+
+    $em->dispatch('post.created', ['id' => 1]);
+    $em->dispatch('user.deleted', ['id' => 2]);
+    $em->dispatch('order.placed', ['id' => 3]);
+
+    expect($listener->calls)->toHaveCount(3);
+});
+
+it('deduplicates listener from global wildcard and specific event', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen('*', $listener);
+    $em->listen('post.created', $listener);
+
+    $em->dispatch('post.created', ['id' => 1]);
+
+    expect($listener->calls)->toHaveCount(1);
+});
+
+it('dispatches to global wildcard and specific listeners together', function () {
+    $em = new EventManager();
+    $global = new SimpleListener();
+    $specific = new AnotherListener();
+
+    $em->listen('*', $global);
+    $em->listen('post.created', $specific);
+
+    $em->dispatch('post.created', ['id' => 1]);
+
+    expect($global->calls)->toHaveCount(1)
+        ->and($specific->calls)->toHaveCount(1);
+});

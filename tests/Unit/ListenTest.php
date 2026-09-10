@@ -110,3 +110,12 @@ it('accepts wildcard with colon separator', function () {
     $em->dispatch('user:created', []);
     expect($listener->calls)->toHaveCount(1);
 });
+
+it('accepts global wildcard *', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen('*', $listener);
+
+    expect(true)->toBeTrue();
+});

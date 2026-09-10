@@ -50,12 +50,13 @@ segment.separated.by.dots
 
 **Segments**: alphanumeric characters only (`a-z`, `A-Z`, `0-9`)  
 **Separators**: `.`, `:`, or `-`  
-**Wildcard**: `*` allowed only at the end  
+**Wildcard**: `*` allowed alone or at the end  
 
 ### Valid Names
 
 | Name | Description |
 |---|---|
+| `*` | Global wildcard (all events) |
 | `post.created` | Standard dot notation |
 | `user:registered` | Colon separator |
 | `order-item.placed` | Hyphen separator |
@@ -142,14 +143,28 @@ event('post.created', ['title' => 'Hello']);
 ```php
 // events.php
 return [
-    'order.created' => [SendEmailListener::class],
-    'order.paid'    => [UpdateInventoryListener::class],
-    'order.*'       => [AuditListener::class],
+    '*'               => [GlobalAuditListener::class],
+    'order.created'   => [SendEmailListener::class],
+    'order.paid'      => [UpdateInventoryListener::class],
+    'order.*'         => [OrderListener::class],
 ];
 
 // bootstrap
 events()->load(__DIR__ . '/events.php');
 event('order.created', ['id' => 42]);
+// GlobalAuditListener: ✅ (via *)
+// SendEmailListener: ✅ (exact)
+// OrderListener: ✅ (via order.*)
+```
+
+### Global wildcard: listen to all events
+
+```php
+events()->listen('*', new AuditListener());
+
+event('post.created', ['id' => 1]);
+event('user.deleted', ['id' => 2]);
+// AuditListener triggered for both
 ```
 
 ---

@@ -91,7 +91,7 @@
          */
         protected function isValidEventName(string $event): bool
         {
-            return preg_match('/^[a-zA-Z0-9]+([.:\-][a-zA-Z0-9]+)*(?:[.:\-]\*)?$/', $event) === 1;
+            return preg_match('/^(\*|[a-zA-Z0-9]+([.:\-][a-zA-Z0-9]+)*(?:[.:\-]\*)?)$/', $event) === 1;
         }
 
         /**
