@@ -8,13 +8,9 @@
 
     class EventManager implements EventManagerInterface
     {
-        /** @var array<string, array<EventListenerInterface>>
+        /** @var array<string, array<string, EventListenerInterface>>
          */
         protected array $events = [];
-
-        /** @var array<string, bool>
-         */
-        protected array $listeners = [];
 
 
         public function __construct()
@@ -67,12 +63,7 @@
 
             $id = get_class($listener);
 
-            if (isset($this->listeners[$id])) {
-                throw new EventException("Listener '{$id}' is already registered");
-            }
-
-            $this->events[$event][] = $listener;
-            $this->listeners[$id] = true;
+            $this->events[$event][$id] = $listener;
         }
 
         /**
@@ -100,12 +91,12 @@
          */
         protected function isValidEventName(string $event): bool
         {
-            return preg_match('/^[a-zA-Z0-9.\*]+$/', $event) === 1;
+            return preg_match('/^[a-zA-Z0-9]+([.:\-][a-zA-Z0-9]+)*(?:[.:\-]\*)?$/', $event) === 1;
         }
 
         /**
          * @param string $event 
-         * @return array<EventListenerInterface> 
+         * @return array<string, EventListenerInterface> 
          */
         protected function resolveListeners(string $event): array
         {
@@ -114,7 +105,9 @@
             foreach ($this->events as $pattern => $list) {
 
                 if ($pattern === $event) {
-                    array_push($resolved, ...$list);
+                    foreach ($list as $id => $listener) {
+                        $resolved[$id] = $listener;
+                    }
 
                     continue;
                 }
@@ -123,7 +116,9 @@
                     $regex = '/^' . str_replace('\*', '.+', preg_quote($pattern, '/')) . '$/';
 
                     if (preg_match($regex, $event)) {
-                        array_push($resolved, ...$list);
+                        foreach ($list as $id => $listener) {
+                            $resolved[$id] = $listener;
+                        }
                     }
                 }
             }
