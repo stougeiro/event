@@ -126,3 +126,30 @@ it('dispatches to global wildcard and specific listeners together', function () 
     expect($global->calls)->toHaveCount(1)
         ->and($specific->calls)->toHaveCount(1);
 });
+
+it('deduplicates across multiple overlapping wildcards', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen('post.created', $listener);
+    $em->listen('post.*', $listener);
+    $em->listen('*', $listener);
+
+    $em->dispatch('post.created', ['id' => 1]);
+
+    expect($listener->calls)->toHaveCount(1);
+});
+
+it('dispatches to multiple different wildcards matching same event', function () {
+    $em = new EventManager();
+    $first = new SimpleListener();
+    $second = new AnotherListener();
+
+    $em->listen('post.*', $first);
+    $em->listen('*', $second);
+
+    $em->dispatch('post.created', ['id' => 1]);
+
+    expect($first->calls)->toHaveCount(1)
+        ->and($second->calls)->toHaveCount(1);
+});

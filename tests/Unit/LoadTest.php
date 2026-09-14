@@ -51,3 +51,13 @@ it('throws exception when listener does not implement interface', function () {
     $em = new EventManager();
     $em->load(__DIR__ . '/../Fixtures/invalid_events_bad_listener.php');
 })->throws(EventException::class, 'must implement EventListenerInterface');
+
+it('loads single string listener from file', function () {
+    $em = new EventManager();
+    $em->load(__DIR__ . '/../Fixtures/single_listener.php');
+
+    $em->dispatch('event.name', ['key' => 'value']);
+
+    expect(DispatchCounter::$count)->toBe(1)
+        ->and(DispatchCounter::$allCalls[0])->toBe(['key' => 'value']);
+});

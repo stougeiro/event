@@ -119,3 +119,66 @@ it('accepts global wildcard *', function () {
 
     expect(true)->toBeTrue();
 });
+
+it('rejects empty string', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen('', $listener);
+})->throws(EventException::class, "Invalid event name ''");
+
+it('rejects name starting with dot', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen('.event', $listener);
+})->throws(EventException::class, "Invalid event name '.event'");
+
+it('rejects name starting with hyphen', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen('-event', $listener);
+})->throws(EventException::class, "Invalid event name '-event'");
+
+it('rejects name starting with colon', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen(':event', $listener);
+})->throws(EventException::class, "Invalid event name ':event'");
+
+it('rejects name ending with dot', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen('event.', $listener);
+})->throws(EventException::class, "Invalid event name 'event.'");
+
+it('rejects name ending with hyphen', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen('event-', $listener);
+})->throws(EventException::class, "Invalid event name 'event-'");
+
+it('rejects name ending with colon', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen('event:', $listener);
+})->throws(EventException::class, "Invalid event name 'event:'");
+
+it('rejects special characters', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen('event@name', $listener);
+})->throws(EventException::class, "Invalid event name 'event@name'");
+
+it('rejects wildcard in middle', function () {
+    $em = new EventManager();
+    $listener = new SimpleListener();
+
+    $em->listen('post.*.created', $listener);
+})->throws(EventException::class, "Invalid event name 'post.*.created'");
