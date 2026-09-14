@@ -1,6 +1,6 @@
 {
     "name": "stougeiro/event",
-    "description": "",
+    "description": "Lightweight event dispatcher with wildcard pattern matching and automatic deduplication. Dispatch string-based events, register invokable listeners, and load configurations from PHP files — all with zero cache overhead.",
     "type": "library",
     "minimum-stability": "stable",
     "prefer-stable": true,
@@ -12,6 +12,17 @@
         }
     ],
     "keywords": [
+        "event",
+        "event-dispatcher",
+        "dispatcher",
+        "listener",
+        "wildcard",
+        "pubsub",
+        "mediator",
+        "observer",
+        "lightweight",
+        "deduplication",
+        "framework-agnostic"
     ],
     "support": {
         "issues": "https://github.com/stougeiro/event/issues",
